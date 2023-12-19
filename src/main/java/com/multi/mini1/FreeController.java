@@ -1,0 +1,122 @@
+package com.multi.mini1;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+public class FreeController {
+
+//  @RequestMapping("test")
+//  public void test() {
+//		System.out.println("test");
+//	}
+
+	// 전체 게시글 불러오기
+	@Autowired
+	private FreeService freeService;
+
+	@RequestMapping("free_list")
+	@ResponseBody
+	public Map<String, Object> list(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "10") int pageSize) throws Exception {
+		int totalCount = freeService.getFreeTotalCount();
+
+		int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+
+		List<FreeVO> freeList = freeService.getFreeList(page, pageSize); // 1, 10
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("numPages", totalPages);
+		result.put("posts", freeList);
+
+		return result;
+	}
+
+	/*
+	 * @RequestMapping("getSearchList")
+	 * 
+	 * @ResponseBody private List<FreeVO> getSearchList(@RequestParam("type") String
+	 * type, @RequestParam("keyword") String keyword, Model model) throws Exception
+	 * { FreeVO freeVo = new FreeVO(); freeVo.setType(type);
+	 * freeVo.setKeyword(keyword); return freeService.getSearchList(freeVo); }
+	 */
+
+	// 게시글 메인에서 검색하기
+	@RequestMapping("getSearchList")
+	@ResponseBody
+	private Map<String, Object> getSearchList(@RequestParam("page") int page, @RequestParam("pageSize") int pageSize,
+			@RequestParam("type") String type, @RequestParam("keyword") String keyword, Model model) throws Exception {
+		FreeVO freeVo = new FreeVO();
+		freeVo.setType(type);
+		freeVo.setKeyword(keyword);
+
+		int totalCount = freeService.getSearchTotalCount(freeVo);
+		int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+
+		Map<String, Object> result = freeService.getSearchListWithPagination(page, pageSize, freeVo);
+		result.put("numPages", totalPages);
+
+		return result;
+	}
+
+	// 게시글 작성하기
+	@RequestMapping("free_board_insert")
+	public String insert(FreeVO freeVo, Model model) {
+		System.out.println("insert 호출!");
+		try {
+			int result = freeService.insert(freeVo);
+			if (result > 0) {
+				model.addAttribute("result", "게시글이 성공적으로 작성되었습니다.");
+			} else {
+				model.addAttribute("result", "게시글 작성에 실패했습니다.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("result", "에러가 발생했습니다.");
+		}
+
+		return "redirect:free_board.jsp";
+	}
+
+	// 게시글 상세페이지
+	@RequestMapping("getFreeDetails")
+	@ResponseBody
+	private FreeVO getFreeDetails(@RequestParam("f_no") int f_no) throws Exception {
+		return freeService.getFreeDetails(f_no);
+	}
+
+	// 게시글 상세페이지 수정하기 버튼
+	@RequestMapping("updateFreePost")
+	@ResponseBody
+	private String updateFreePost(@RequestParam("f_no") int f_no, @RequestParam("f_title") String f_title,
+			@RequestParam("f_content") String f_content) {
+		try {
+			// Retrieve the existing FreeVO from the database
+			FreeVO existingPost = freeService.getFreeDetails(f_no);
+
+			// Update the fields you want to modify
+			existingPost.setF_title(f_title);
+			existingPost.setF_content(f_content);
+
+			// Call the service method to update the post
+			int result = freeService.updateFreePost(existingPost);
+
+			if (result > 0) {
+				return "success";
+			} else {
+				return "fail";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
+	}
+}

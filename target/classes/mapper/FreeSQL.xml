@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="free">
+	<!-- ORM, Mapper 파일! -->
+	<insert id="create" parameterType="freeVO">
+		INSERT INTO free_board
+		(f_title, f_content, f_writer, f_like, f_time,
+		f_view)
+		VALUES
+		(#{f_title}, #{f_content}, 'root', #{f_like}, CURRENT_DATE(),
+		#{f_view})
+	</insert>
+
+	<select id="list" resultType="freeVO" parameterType="map">
+		select *
+		from (
+		select ROW_NUMBER() over(order by f_num desc) as f_no,
+		f_num,
+		f_title, f_content, f_writer, f_like, f_time, f_view
+		FROM
+		free_board f
+
+		)
+		f2
+		where f2.f_no between #{start} and #{end} and f2.f_num is not null
+	</select>
+
+
+	<select id="totalCount" resultType="int">
+		SELECT COUNT(*) FROM
+		free_board
+	</select>
+
+	<!-- <select id="searchFreeList" parameterType="freeVO" resultType="freeVO"> 
+		select * from free_board <where> <choose> <when test="type != null and type.equals('title')"> 
+		AND f_title LIKE CONCAT('%', #{keyword}, '%') </when> <when test="type != 
+		null and type.equals('content')"> AND f_content LIKE CONCAT('%', #{keyword}, 
+		'%') </when> <when test="type != null and type.equals('writer')"> AND f_writer 
+		= #{keyword} </when> </choose> </where> </select> -->
+
+	<select id="searchFreeList" parameterType="freeVO"
+		resultType="freeVO">
+		select *
+		from (
+		select ROW_NUMBER() over(order by f_num desc) as f_no,
+		f_num, f_title, f_content, f_writer, f_like, f_time, f_view
+		FROM
+		free_board
+		<where>
+			<choose>
+				<when
+					test="freeVo.type != null and freeVo.type.equals('title')">
+					AND f_title LIKE CONCAT('%', #{freeVo.keyword}, '%')
+				</when>
+				<when
+					test="freeVo.type != null and freeVo.type.equals('content')">
+					AND f_content LIKE CONCAT('%', #{freeVo.keyword}, '%')
+				</when>
+				<when
+					test="freeVo.type != null and freeVo.type.equals('writer')">
+					AND f_writer = #{freeVo.keyword}
+				</when>
+			</choose>
+		</where>
+		)
+		f2
+		where f2.f_no between #{start} and #{end} and f2.f_num is not null
+	</select>
+
+	<select id="searchTotalCount" parameterType="freeVO"
+		resultType="int">
+		SELECT COUNT(*) FROM free_board
+		<where>
+			<choose>
+				<when test="type != null and type.equals('title')">
+					AND f_title LIKE CONCAT('%', #{keyword}, '%')
+				</when>
+				<when test="type != null and type.equals('content')">
+					AND f_content LIKE CONCAT('%', #{keyword}, '%')
+				</when>
+				<when test="type != null and type.equals('writer')">
+					AND f_writer = #{keyword}
+				</when>
+			</choose>
+		</where>
+	</select>
+
+
+	<select id="selectFreeDetails" parameterType="int"
+		resultType="FreeVO">
+		SELECT * FROM (
+		SELECT
+		ROW_NUMBER() OVER(ORDER BY f_num DESC)
+		as f_no,
+		f_num, f_title, f_content, f_writer, f_like, f_time, f_view
+		FROM
+		free_board
+		) f
+		WHERE f.f_no = #{f_no}
+	</select>
+	
+	<!-- 게시판 수정하기 -->
+	<update id="updateFreePost" parameterType="freeVO">
+		UPDATE free_board
+		SET
+		f_title = #{f_title},
+		f_content = #{f_content}
+		WHERE
+		f_num = #{f_num}
+	</update>
+
+
+</mapper>
