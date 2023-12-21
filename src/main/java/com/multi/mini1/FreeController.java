@@ -40,15 +40,6 @@ public class FreeController {
 		return result;
 	}
 
-	/*
-	 * @RequestMapping("getSearchList")
-	 * 
-	 * @ResponseBody private List<FreeVO> getSearchList(@RequestParam("type") String
-	 * type, @RequestParam("keyword") String keyword, Model model) throws Exception
-	 * { FreeVO freeVo = new FreeVO(); freeVo.setType(type);
-	 * freeVo.setKeyword(keyword); return freeService.getSearchList(freeVo); }
-	 */
-
 	// 게시글 메인에서 검색하기
 	@RequestMapping("getSearchList")
 	@ResponseBody
@@ -89,24 +80,21 @@ public class FreeController {
 	// 게시글 상세페이지
 	@RequestMapping("getFreeDetails")
 	@ResponseBody
-	private FreeVO getFreeDetails(@RequestParam("f_no") int f_no) throws Exception {
-		return freeService.getFreeDetails(f_no);
+	private FreeVO getFreeDetails(@RequestParam("f_no") int f_no, @RequestParam("f_num") int f_num) throws Exception {
+		return freeService.getFreeDetails(f_no, f_num);
 	}
-
+	
 	// 게시글 상세페이지 수정하기 버튼
 	@RequestMapping("updateFreePost")
 	@ResponseBody
 	private String updateFreePost(@RequestParam("f_no") int f_no, @RequestParam("f_title") String f_title,
-			@RequestParam("f_content") String f_content) {
+			@RequestParam("f_content") String f_content, @RequestParam("f_num") int f_num) {
 		try {
-			// Retrieve the existing FreeVO from the database
-			FreeVO existingPost = freeService.getFreeDetails(f_no);
+			FreeVO existingPost = freeService.getFreeDetails(f_no, f_num);
 
-			// Update the fields you want to modify
 			existingPost.setF_title(f_title);
 			existingPost.setF_content(f_content);
 
-			// Call the service method to update the post
 			int result = freeService.updateFreePost(existingPost);
 
 			if (result > 0) {
@@ -119,4 +107,36 @@ public class FreeController {
 			return "error";
 		}
 	}
+
+	// 댓글 추가
+	@RequestMapping("addComment")
+	@ResponseBody
+	private String addComment(@RequestParam("fr_ori_bbs") int fr_ori_bbs,
+			@RequestParam("fr_content") String fr_content) {
+		try {
+			CommentVO comment = new CommentVO();
+			comment.setFr_ori_bbs(fr_ori_bbs); // fr_ori_bbs를 fr_ori_bbs로 설정
+
+			comment.setFr_content(fr_content);
+
+			int result = freeService.addComment(comment);
+
+			if (result > 0) {
+				return "success";
+			} else {
+				return "fail";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
+	}
+
+	// 댓글 가져오기
+	@RequestMapping("getComments")
+	@ResponseBody
+	private List<CommentVO> getComments(@RequestParam("fr_ori_bbs") int fr_ori_bbs) throws Exception {
+		return freeService.getComments(fr_ori_bbs);
+	}
+
 }

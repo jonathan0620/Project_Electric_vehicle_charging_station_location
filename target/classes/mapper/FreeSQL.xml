@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="free">
-	<!-- ORM, Mapper 파일! -->
 	<insert id="create" parameterType="freeVO">
 		INSERT INTO free_board
 		(f_title, f_content, f_writer, f_like, f_time,
@@ -30,13 +29,6 @@
 		SELECT COUNT(*) FROM
 		free_board
 	</select>
-
-	<!-- <select id="searchFreeList" parameterType="freeVO" resultType="freeVO"> 
-		select * from free_board <where> <choose> <when test="type != null and type.equals('title')"> 
-		AND f_title LIKE CONCAT('%', #{keyword}, '%') </when> <when test="type != 
-		null and type.equals('content')"> AND f_content LIKE CONCAT('%', #{keyword}, 
-		'%') </when> <when test="type != null and type.equals('writer')"> AND f_writer 
-		= #{keyword} </when> </choose> </where> </select> -->
 
 	<select id="searchFreeList" parameterType="freeVO"
 		resultType="freeVO">
@@ -85,8 +77,7 @@
 		</where>
 	</select>
 
-
-	<select id="selectFreeDetails" parameterType="int"
+	<select id="selectFreeDetails" parameterType="map"
 		resultType="FreeVO">
 		SELECT * FROM (
 		SELECT
@@ -96,9 +87,19 @@
 		FROM
 		free_board
 		) f
-		WHERE f.f_no = #{f_no}
+		WHERE f.f_num = #{f_num}
 	</select>
-	
+
+	<!-- <select id="selectFreeDetails" parameterType="int"
+		resultType="FreeVO">
+		SELECT * FROM ( SELECT ROW_NUMBER() OVER(ORDER BY f_num
+		DESC) as f_no,
+		f_num,
+		f_title, f_content, f_writer, f_like, f_time,
+		f_view FROM free_board ) f
+		WHERE f.f_num = #{f_num}
+	</select> -->
+
 	<!-- 게시판 수정하기 -->
 	<update id="updateFreePost" parameterType="freeVO">
 		UPDATE free_board

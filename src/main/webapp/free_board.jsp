@@ -183,6 +183,7 @@ ul, li {
 		var numPages; // 전체 페이지 수
 		var table;
 
+		//게시글 리스트 불러오기
 		function loadFreeList(page) {
 			$.ajax({
 				url : "free_list",
@@ -205,6 +206,7 @@ ul, li {
 			});
 		}
 
+		//검색 + 페이징 기능
 		function getSearchList(page) {
 			$.ajax({
 				type : 'GET',
@@ -249,13 +251,12 @@ ul, li {
 			$.each(posts, function(index, post) {
 				var row = $("<tr>").appendTo(tbody);
 				$("<td>").text(post.f_no).appendTo(row);
-				/* $("<td>").text(post.f_no).appendTo(row); */
 				$("<td>").html(
 						"<a href='free_board_detail.jsp?f_no=" + post.f_no
+								+ "&f_num=" + post.f_num
 								+ "' class='post-link' data-post-id='"
 								+ post.f_no + "'>" + post.f_title + "</a>")
 						.appendTo(row);
-				/* $("<td>").text(post.f_title).appendTo(row); */
 				$("<td>").text(post.f_content).appendTo(row);
 				$("<td>").text(post.f_writer).appendTo(row);
 				$("<td>").text(post.f_like).appendTo(row);

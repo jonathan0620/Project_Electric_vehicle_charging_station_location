@@ -48,12 +48,25 @@ public class FreeDAO {
 	public List<FreeVO> selectSearchList(FreeVO freeVo) throws Exception {
 		return my.selectList("free.searchFreeList", freeVo);
 	}
-
-	public FreeVO selectFreeDetails(int f_no) throws Exception {
-		return my.selectOne("free.selectFreeDetails", f_no);
+	
+	public FreeVO selectFreeDetails(Map<String, Integer> paramMap) throws Exception {
+	    return my.selectOne("free.selectFreeDetails", paramMap);
 	}
+
+	/*
+	 * public FreeVO selectFreeDetails(int f_no) throws Exception { return
+	 * my.selectOne("free.selectFreeDetails", f_no); }
+	 */
 
 	public int updateFreePost(FreeVO freeVO) throws Exception {
 		return my.update("free.updateFreePost", freeVO);
+	}
+
+	public int addComment(CommentVO comment) {
+		return my.insert("comment.create", comment);
+	}
+
+	public List<CommentVO> getComments(int fr_ori_bbs) throws Exception {
+		return my.selectList("comment.getComments", fr_ori_bbs);
 	}
 }

@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -152,7 +151,7 @@
 				$("#title").val(result.f_title);
 				$("#contents").val(result.f_content);
 
-				getComments(fNum);
+				getComments(postId);
 			},
 			error : function(xhr, status, error) {
 				console.error("Ajax 요청 중 에러 발생:", status, error);
@@ -229,7 +228,6 @@
 		var postId = $("#postNo").text();
 		var title = $("#title").val();
 		var contents = $("#contents").val();
-		var fNum = getParameterByName('f_num');
 
 		$.ajax({
 			url : "updateFreePost",
@@ -237,8 +235,7 @@
 			data : {
 				f_no : postId,
 				f_title : title,
-				f_content : contents,
-				f_num: fNum
+				f_content : contents
 			},
 			success : function(result) {
 				if (result === "success") {
@@ -265,8 +262,8 @@
 	});
 
 	function addComment() {
-		/* var postId = $("#postNo").text(); */
-		var fNum = getParameterByName('f_num');
+		var postId = $("#postNo").text();
+
 		var commentContent = $("#commentContent").val();
 
 		$.ajax({
@@ -274,12 +271,12 @@
 			method : "POST",
 			data : {
 				fr_content : commentContent,
-				fr_ori_bbs : fNum
+				fr_ori_bbs : postId
 			},
 			success : function(result) {
 				if (result === "success") {
 					alert("댓글이 성공적으로 등록되었습니다.");
-					getComments(fNum);
+					getComments(postId);
 					location.reload();
 				} else {
 					alert("댓글 등록에 실패했습니다.");
@@ -291,25 +288,39 @@
 		});
 	}
 
-	function getParameterByName(name, url) {
-		if (!url)
-			url = window.location.href;
-		name = name.replace(/[\[\]]/g, "\\$&");
-		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"), results = regex
-				.exec(url);
-		if (!results)
-			return null;
-		if (!results[2])
-			return '';
-		return decodeURIComponent(results[2].replace(/\+/g, " "));
-	}
+	/* function addComment() {
+		var postId = $("#postNo").text();
+		var commentContent = $("#commentContent").val();
+		var fNum = getParameterByName("f_num");
 
+		$.ajax({
+			url : "addComment",
+			method : "POST",
+			data : {
+				fr_content : commentContent,
+				fr_ori_bbs: fNum
+			},
+			success : function(result) {
+				if (result === "success") {
+					alert("댓글이 성공적으로 등록되었습니다.");
+					getComments(postId);
+					location.reload();
+				} else {
+					alert("댓글 등록에 실패했습니다.");
+				}
+			},
+			error : function(xhr, status, error) {
+				console.error("Ajax 요청 중 에러 발생:", status, error);
+			}
+		});
+	}  */
+	
 	function getComments(postId) {
-		var fNum = getParameterByName('f_num');
 		$.ajax({
 			url : "getComments",
 			data : {
-				fr_ori_bbs : fNum
+				fr_ori_bbs : postId
+				/* fr_ori_bbs : fNum */
 			},
 			dataType : "json",
 			success : function(comments) {

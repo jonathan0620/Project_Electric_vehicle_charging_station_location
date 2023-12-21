@@ -53,13 +53,29 @@ public class FreeService {
 
 		return result;
 	}
-
-	public FreeVO getFreeDetails(int f_no) throws Exception {
-		return freeDAO.selectFreeDetails(f_no);
+	
+	public FreeVO getFreeDetails(int f_no, int f_num) throws Exception {
+	    Map<String, Integer> paramMap = new HashMap<>();
+	    paramMap.put("f_no", f_no);
+	    paramMap.put("f_num", f_num);
+	    return freeDAO.selectFreeDetails(paramMap);
 	}
+	
+	/*
+	 * public FreeVO getFreeDetails(int f_no) throws Exception { return
+	 * freeDAO.selectFreeDetails(f_no); }
+	 */
 
 	public int updateFreePost(FreeVO freeVO) throws Exception {
 		return freeDAO.updateFreePost(freeVO);
+	}
+
+	public int addComment(CommentVO comment) throws Exception {
+		return freeDAO.addComment(comment);
+	}
+
+	public List<CommentVO> getComments(int fr_ori_bbs) throws Exception {
+		return freeDAO.getComments(fr_ori_bbs);
 	}
 
 }

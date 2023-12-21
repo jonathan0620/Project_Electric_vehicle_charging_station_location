@@ -4,15 +4,13 @@
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 	<typeAliases>
-		<typeAlias type="com.multi.mini1.FreeVO" alias="FreeVO"></typeAlias>
+		<typeAlias type="com.multi.mini1.FreeVO" alias="freeVO"></typeAlias>
+		<typeAlias type="com.multi.mini1.CommentVO" alias="commentVO"></typeAlias>
 	</typeAliases>
 
 	<mappers>
 		<mapper resource="mapper/FreeSQL.xml" />
+		<mapper resource="mapper/CommentSQL.xml" />
 	</mappers>
 	
 </configuration>
-
-
-
-
