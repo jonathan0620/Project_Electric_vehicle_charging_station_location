@@ -9,15 +9,44 @@
 		'root', now(), #{fr_ori_bbs})
 	</insert>
 
+	<!-- 댓글 가져오기 -->
 	<select id="getComments" parameterType="int"
 		resultType="CommentVO">
 		SELECT * FROM free_reply WHERE fr_ori_bbs = #{fr_ori_bbs}
 	</select>
 
+	<!-- 댓글 추가 -->
 	<insert id="addComment" parameterType="CommentVO">
 		INSERT INTO free_reply
 		(fr_content, fr_writer, fr_time, fr_ori_bbs)
 		VALUES
-		(#{fr_content}, 'root', now(), #{fr_ori_bbs})
+		(#{fr_content},
+		'root', now(), #{fr_ori_bbs})
 	</insert>
+
+	<!-- 댓글 삭제 -->
+	<delete id="deleteComments">
+		DELETE FROM free_reply
+		WHERE fr_ori_bbs = #{f_num}
+	</delete>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteComment">
+		DELETE FROM free_reply
+		WHERE fr_num = #{fr_num}
+	</delete>
+
+	<!-- 댓글 수정 -->
+	<update id="updateComment" parameterType="CommentVO">
+		UPDATE free_reply
+		SET
+		fr_content = #{fr_content}
+		WHERE fr_num = #{fr_num}
+	</update>
+
+	<!-- 댓글 상세 정보 가져오기 -->
+	<select id="getCommentDetails" parameterType="int"
+		resultType="CommentVO">
+		SELECT * FROM free_reply WHERE fr_num = #{fr_num}
+	</select>
 </mapper>
